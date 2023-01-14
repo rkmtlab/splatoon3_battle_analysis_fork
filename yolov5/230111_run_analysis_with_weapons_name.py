@@ -16,7 +16,7 @@ import os
 from PIL import Image
 import time
 
-#import tensorflow as tf
+import tensorflow as tf
 import re
 
 """
@@ -60,11 +60,11 @@ area_object_num = [k for k, v in results_names.items() if v == 'area_object'][0]
 asari_object_num = [k for k, v in results_names.items() if v == 'asari_object'][0]
 player_num = [k for k, v in results_names.items() if v == 'player'][0]
 
-"""
+
 weapon_model = tf.keras.models.load_model('models/weapon_keras_model')
 main_list = ['52-Gal', '96-Gal', 'Aerospray', 'Ballpoint-Splatling', 'Bamboozler-14-Mk-I', 'Blaster', 'Bloblobber', 'Carbon-Roller', 'Clash-Blaster', 'Dapple-Dualies', 'Dark-Tetra-Dualies', 'Dualie-Squelchers', 'Dynamo-Roller', 'E-liter-4K', 'Explosher', 'Flingza-Roller', 'Glooga-Dualies', 'Goo-Tuber', 'H-3-Nozzlenose', 'Heavy-Splatling', 'Hero-Shooter-Replica', 'Hydra-Splatling', 'Inkbrush', 'Jet-Squelcher', 'L-3-Nozzlenose', 'LACT-450',
              'Luna-Blaster', 'Mini-Splatling', 'N-ZAP85', 'Nautilus-47', 'Octobrush', 'Range-Blaster', 'Rapid-Blaster', 'Rapid-Blaster-Pro', 'Slosher', 'Sloshing-Machine', 'Splash-o-matic', 'Splat-Brella', 'Splat-Charger', 'Splat-Dualies', 'Splat-Roller', 'Splatana-Stamper', 'Splatana-Wiper', 'Splattershot', 'Splattershot-Jr', 'Splattershot-Pro', 'Sploosh-o-matic', 'Squeezer', 'Squiffer', 'Tenta-Brella', 'Tri-Slosher', 'Tri-Stringer', 'Undercover-Brella']
-
+"""
 stage_model = tf.keras.models.load_model('models/stage_keras_model')
 stage_list = ['amabi', 'chozame', 'gonzui', 'kinmedai', 'mahimahi',
               'masaba', 'mategai', 'namerou', 'sumeshi', 'yagara', 'yunohana', 'zatou']
@@ -893,12 +893,12 @@ def main():
                         result_list[1 + i] = ikalump_state[i]
 
 
-                    """
+
                     if warm_up_frames > 0:
                         warm_up_batch.append(results)
-                        # weapon_list = output_weapon_names(results,weapon_model, main_list)
-                        # for i in range(len(weapon_list)):
-                        #    result_list[24+i] = weapon_list[i]
+                         weapon_list = output_weapon_names(results,weapon_model, main_list)
+                         for i in range(len(weapon_list)):
+                            result_list[24+i] = weapon_list[i]
 
                         # detected_stage = classify_stage(results, stage_model, stage_list)
                         # result_list[33] = detected_stage
@@ -908,14 +908,14 @@ def main():
                             # print("warm_up_frames",len(warm_up_batch))
 
                             # warm_up_resultsを処理する
-                            detected_stage = batch_stage_classification(warm_up_batch)
+                            #detected_stage = batch_stage_classification(warm_up_batch)
                             weapon_list = batch_weapon_classification(warm_up_batch)
                             # print(result_list)
                     """
                     # detected_rule = "yagura"
                     """
                     if warm_up_frames == 0:
-                        result_list[21] = detected_stage
+                        #result_list[21] = detected_stage
                         for i in range(len(weapon_list)):
                             result_list[13 + i] = weapon_list[i]
                     """
