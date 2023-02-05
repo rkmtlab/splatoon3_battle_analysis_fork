@@ -167,9 +167,94 @@ def get_center(results):
         return results.ims[0].shape[1] // 2
 
 
+class ImageTransform():
+    def __init__(self, mean, std):
+        self.data_transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean, std)
+        ])
+
+    def __call__(self, img):
+        return self.data_transform(img)
+    
+mean = (0.5,)
+std = (0.5,)
+
+transform = ImageTransform(mean, std)
+class_names = ['52-Gal',
+ '96-Gal',
+ 'Aerospray',
+ 'Aerospray-RG',
+ 'Ballpoint-Splatling',
+ 'Bamboozler-14-Mk-I',
+ 'Big-Swig-Roller',
+ 'Blaster',
+ 'Bloblobber',
+ 'Carbon-Roller',
+ 'Carbon-Roller-Deco',
+ 'Clash-Blaster',
+ 'Custom-Splattershot-Jr',
+ 'Dapple-Dualies',
+ 'Dapple-Dualies-Nouveau',
+ 'Dark-Tetra-Dualies',
+ 'Dualie-Squelchers',
+ 'Dynamo-Roller',
+ 'E-liter-4K',
+ 'Explosher',
+ 'Flingza-Roller',
+ 'Glooga-Dualies',
+ 'Goo-Tuber',
+ 'H-3-Nozzlenose',
+ 'Heavy-Splatling',
+ 'Hero-Shooter-Replica',
+ 'Hydra-Splatling',
+ 'Inkbrush',
+ 'Inkbrush-Nouveau',
+ 'Jet-Squelcher',
+ 'L-3-Nozzlenose',
+ 'LACT-450',
+ 'Luna-Blaster',
+ 'Luna-Blaster-Neo',
+ 'Mini-Splatling',
+ 'N-ZAP85',
+ 'Nautilus-47',
+ 'Octobrush',
+ 'Range-Blaster',
+ 'Rapid-Blaster',
+ 'Rapid-Blaster-Pro',
+ 'Slosher',
+ 'Slosher-Deco',
+ 'Sloshing-Machine',
+ 'Snipewriter-5H',
+ 'Splash-o-matic',
+ 'Splat-Brella',
+ 'Splat-Charger',
+ 'Splat-Dualies',
+ 'Splat-Roller',
+ 'Splatana-Stamper',
+ 'Splatana-Wiper',
+ 'Splattershot',
+ 'Splattershot-Jr',
+ 'Splattershot-Nova',
+ 'Splattershot-Pro',
+ 'Sploosh-o-matic',
+ 'Squeezer',
+ 'Squiffer',
+ 'Tenta-Brella',
+ 'Tri-Slosher',
+ 'Tri-Stringer',
+ 'Undercover-Brella',
+ 'Zink-Mini-Splatling']
+
+model = torch.load('weapon_classification_model_weight.pth')
+model.eval()  ## torch.nn.Module.eval
+
+
+
 def output_weapon_names(results, weapon_model, main_list):
     weapon_classification_list = []
     imgs = output_weapons_images(results)
+    """
     imgs_np = []
     if imgs is not None:
         for im in imgs:
@@ -179,8 +264,24 @@ def output_weapon_names(results, weapon_model, main_list):
         imgs_np = np.array(imgs_np)
         imgs_preprocessed = tf.keras.applications.mobilenet_v2.preprocess_input(imgs_np)
         predict = weapon_model.predict(np.array(imgs_preprocessed))
-        for p in predict:
-            weapon_classification_list.append(main_list[p.argmax()])
+    """
+    
+    return weapon_classification_list
+
+
+def output_weapon_names_pytorch(results, weapon_model, main_list):
+
+    for imgs in output_weapons_images(results): 
+        inputs = transform(img)
+        inputs = inputs.unsqueeze(0).to(device)
+        weapon_classification_list = []
+        imgs = output_weapons_images(results)
+        outputs = model(inputs)
+        batch_probs = F.softmax(outputs, dim=1)
+        batch_probs, batch_indices = batch_probs.sort(dim=1, descending=True)
+
+        for probs, indices in zip(batch_probs, batch_indices):
+            weapon_classification_list = class_names[indices[k]]
     return weapon_classification_list
 
 
